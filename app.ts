@@ -1,11 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { connectMongo } from "./configs/mongo";
-import { ensureQdrantCollection } from "./configs/qdrant";
+import { createCollectionsQdrant } from "./configs/qdrant";
 
 export async function createApp() {
   await connectMongo();
-  await ensureQdrantCollection();
+  await createCollectionsQdrant();
 
   const app = express();
   app.use(bodyParser.json());

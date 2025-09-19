@@ -7,17 +7,6 @@ export interface BaseCollectionConfig {
   description?: string;
 }
 
-export interface DocumentCollectionConfig extends BaseCollectionConfig {
-  type: "documents";
-  payloadSchema: {
-    url?: string;
-    title?: string;
-    content?: string;
-    topic?: string;
-    createdAt?: Date;
-    metadata?: Record<string, any>;
-  };
-}
 
 export interface UrlCollectionConfig extends BaseCollectionConfig {
   type: "urls";
@@ -32,33 +21,9 @@ export interface UrlCollectionConfig extends BaseCollectionConfig {
   };
 }
 
-export interface UserCollectionConfig extends BaseCollectionConfig {
-  type: "users";
-  payloadSchema: {
-    userId: string;
-    preferences?: Record<string, any>;
-    searchHistory?: string[];
-    createdAt: Date;
-    lastActive?: Date;
-  };
-}
-
-export interface QueryCollectionConfig extends BaseCollectionConfig {
-  type: "queries";
-  payloadSchema: {
-    query: string;
-    userId?: string;
-    results?: string[];
-    timestamp: Date;
-    context?: Record<string, any>;
-  };
-}
 
 export type CollectionConfig = 
-  | DocumentCollectionConfig 
-  | UrlCollectionConfig 
-  | UserCollectionConfig 
-  | QueryCollectionConfig;
+  | UrlCollectionConfig;
 
 export interface CollectionMetadata {
   name: string;
@@ -83,11 +48,7 @@ export interface SearchResult {
 }
 
 export interface CollectionManager {
-  createCollection(config: CollectionConfig): Promise<boolean>;
-  deleteCollection(name: string): Promise<boolean>;
-  collectionExists(name: string): Promise<boolean>;
-  getCollectionInfo(name: string): Promise<CollectionMetadata | null>;
-  listCollections(): Promise<CollectionMetadata[]>;
+
   upsertPoints(collectionName: string, points: VectorPoint[]): Promise<boolean>;
   searchPoints(
     collectionName: string, 

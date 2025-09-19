@@ -1,31 +1,50 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
-
-export const QDRANT_URL = process.env.QDRANT_URL || "http://localhost:6333";
-export const VECTOR_SIZE = Number.parseInt(process.env.VECTOR_SIZE || "1536", 10);
-export const VECTOR_DISTANCE = process.env.VECTOR_DISTANCE || "Cosine";
+import { qdrantDistanceTypes } from "../interfaces/config";
 
 let client: QdrantClient;
-const URL_COLLECTION = "urls";
-export function getQdrantClient() {
+
+// Constants
+const VECTOR_SIZE = 1536;
+const VECTOR_DISTANCE: qdrantDistanceTypes = "Cosine";
+
+// Singleton Qdrant client
+export function getQdrantClient(): QdrantClient {
   if (!client) {
-    client = new QdrantClient({ url: QDRANT_URL });
+    client = new QdrantClient({ url: process.env.QDRANT_URL || "http://localhost:6333" });
   }
   return client;
 }
 
-export async function ensureQdrantCollection() {
+/**
+ * Ensure a Qdrant collection exists.
+ * @param collectionName Name of the collection (e.g., "urls", "web_content")
+ * @param vectorSize Size of the vector embedding
+ * @param distance Distance metric: qdrantDistanceTypes
+ */
+export async function ensureQdrantCollection(
+  collectionName: string,
+  vectorSize: number = VECTOR_SIZE,
+  distance: qdrantDistanceTypes = VECTOR_DISTANCE
+): Promise<QdrantClient> {
   const qdrant = getQdrantClient();
   try {
-    await qdrant.createCollection(, {
-      vectors: { size: VECTOR_SIZE, distance: VECTOR_DISTANCE },
+    await qdrant.createCollection(collectionName, {
+      vectors: { size: vectorSize, distance },
     });
-    console.log("✅ Qdrant collection ready");
+    console.log(`✅ Qdrant collection '${collectionName}' ready`);
   } catch (err) {
     if (!String((err as Error)?.message || "").includes("already exists")) {
-      console.error("⚠️ Qdrant error:", err);
+      console.error(`⚠️ Qdrant error creating '${collectionName}':`, err);
+    } else {
+      console.log(`⚡ Collection '${collectionName}' already exists`);
     }
   }
   return qdrant;
 }
 
 
+
+export async function createCollectionsQdrant() {
+  const q = await ensureQdrantCollection("urls");
+  const q2 = await ensureQdrantCollection("web_content");
+}

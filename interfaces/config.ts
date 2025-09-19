@@ -1,0 +1,1 @@
+export type qdrantDistanceTypes = "Cosine" | "Dot" | "Euclid" | "Manhattan";
