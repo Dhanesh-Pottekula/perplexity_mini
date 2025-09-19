@@ -1,4 +1,5 @@
-import { createApp } from "./app.js";
+import { createApp } from "./app";
+
 
 (async () => {
   const app = await createApp();
