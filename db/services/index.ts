@@ -8,6 +8,11 @@ export {
   qdrantService 
 } from './qdrantService';
 
+export { 
+  UrlService, 
+  urlService 
+} from './urlService';
+
 // Re-export types for convenience
 export type { 
   VectorPoint, 

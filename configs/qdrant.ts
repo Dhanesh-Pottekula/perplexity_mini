@@ -46,6 +46,7 @@ export async function ensureQdrantCollection(
 
 
 export async function createCollectionsQdrant() {
+  console.log("✅ Creating Qdrant collections");
   const q = await ensureQdrantCollection("urls");
   const q2 = await ensureQdrantCollection("web_content");
 }

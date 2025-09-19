@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { connectMongo } from "./configs/mongo";
 import { createCollectionsQdrant } from "./configs/qdrant";
+import urlRoutes from "./routes/urlRoutes";
 
 export async function createApp() {
   await connectMongo();
@@ -10,7 +11,8 @@ export async function createApp() {
   const app = express();
   app.use(bodyParser.json());
 
-  // app.use(docRoutes);
+  // API Routes
+  app.use("/api/urls", urlRoutes);
 
   app.get("/health", (req, res) => {
     res.json({ status: "ok", pid: process.pid });

@@ -1,6 +1,4 @@
-import mongoose, { Document, Model, FilterQuery, UpdateQuery } from "mongoose";
-import Url from "../models/mongo/UrlObj";
-import Doc from "../models/mongo/Doc";
+import { Document, Model, FilterQuery, UpdateQuery } from "mongoose";
 
 // Generic MongoDB service class
 export class MongoService<T extends Document> {
