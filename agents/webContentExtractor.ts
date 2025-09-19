@@ -1,6 +1,5 @@
-import { RedisQueue } from "../db/services/redisService"; // your RedisQueue implementation
+import { redisQueue } from "../db/services/redisService"; // your RedisQueue implementation
 
-const redisQueue = new RedisQueue();
 
 async function processUrl(url: string) {
   try {

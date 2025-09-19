@@ -11,7 +11,7 @@ export {
 export { 
   UrlService, 
   urlService 
-} from './urlService';
+} from '../../services/urlService';
 
 // Re-export types for convenience
 export type { 

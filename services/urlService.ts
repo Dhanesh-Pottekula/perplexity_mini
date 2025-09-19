@@ -1,12 +1,8 @@
-import { RedisQueue } from './redisService';
-import { QueueName } from '../../interfaces/config';
+import { redisQueue } from '../db/services/redisService';
+import { QueueName } from '../interfaces/config';
 
 export class UrlService {
-  private queueManager: RedisQueue;
-
-  constructor() {
-    this.queueManager = new RedisQueue();
-  }
+  private queueManager = redisQueue;
 
   /**
    * Add a URL to the urls_queue

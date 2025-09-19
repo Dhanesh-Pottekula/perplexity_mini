@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { urlService } from '../db/services/urlService';
+import { urlService } from '../services/urlService';
 import { sendErrorResponse } from '../helpers/responseHelpers';
 
 

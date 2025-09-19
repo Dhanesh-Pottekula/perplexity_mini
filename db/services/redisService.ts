@@ -2,8 +2,13 @@ import { getRedisClient } from "../../configs/redis";
 import { QueueName } from "../../interfaces/config";
 import { QueueManager } from "../../interfaces/config";
 
-export class RedisQueue implements QueueManager {
+class RedisQueue implements QueueManager {
   private redis = getRedisClient();
+
+  // Get the Redis client instance
+  getRedisClient() {
+    return this.redis;
+  }
 
   // Push an item to a queue (LPUSH)
   async push(queue: QueueName, value: string) {
@@ -34,4 +39,8 @@ export class RedisQueue implements QueueManager {
     };
     loop();
   }
+
 }
+
+// Export a singleton instance
+export const redisQueue = new RedisQueue();

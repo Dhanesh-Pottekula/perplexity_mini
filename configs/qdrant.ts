@@ -34,11 +34,8 @@ export async function ensureQdrantCollection(
     });
     console.log(`✅ Qdrant collection '${collectionName}' ready`);
   } catch (err) {
-    if (!String((err as Error)?.message || "").includes("already exists")) {
-      console.error(`⚠️ Qdrant error creating '${collectionName}':`, err);
-    } else {
       console.log(`⚡ Collection '${collectionName}' already exists`);
-    }
+
   }
   return qdrant;
 }
@@ -46,7 +43,6 @@ export async function ensureQdrantCollection(
 
 
 export async function createCollectionsQdrant() {
-  console.log("✅ Creating Qdrant collections");
   const q = await ensureQdrantCollection("urls");
   const q2 = await ensureQdrantCollection("web_content");
 }
