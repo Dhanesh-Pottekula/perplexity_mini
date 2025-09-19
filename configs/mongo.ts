@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { envDefaults } from "../envDefaults";
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/perplexity";
+const MONGO_URI = envDefaults.MONGO_URI;
 
 export async function connectMongo() {
   try {

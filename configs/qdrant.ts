@@ -1,5 +1,6 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { qdrantDistanceTypes } from "../interfaces/config";
+import { envDefaults } from "../envDefaults";
 
 let client: QdrantClient;
 
@@ -10,7 +11,7 @@ const VECTOR_DISTANCE: qdrantDistanceTypes = "Cosine";
 // Singleton Qdrant client
 export function getQdrantClient(): QdrantClient {
   if (!client) {
-    client = new QdrantClient({ url: process.env.QDRANT_URL || "http://localhost:6333" });
+    client = new QdrantClient({ url: envDefaults.QDRANT_URL });
   }
   return client;
 }
