@@ -27,6 +27,16 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+  
+
+  embedding-service:
+    build: ./python-embedding
+    container_name: embedding_service
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python-embedding:/app   
 
 volumes:
   mongo_data:
