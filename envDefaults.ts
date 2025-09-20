@@ -9,4 +9,5 @@ export const envDefaults = {
   REDIS_PORT: Number(process.env.REDIS_PORT) || 6379,
   PORT: Number(process.env.PORT) || 3000,
   BROWSER_HEADLESS: process.env.BROWSER_HEADLESS === "true" ? true : false,
+  EMBEDDING_SERVICE_URL: process.env.EMBEDDING_SERVICE_URL || "http://localhost:8001",
 };
