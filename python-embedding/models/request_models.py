@@ -3,8 +3,10 @@ from typing import List
 
 
 class EmbeddingRequest(BaseModel):
+    url: str
     texts: List[str]
 
 
 class EmbeddingResponse(BaseModel):
-    embeddings: List[List[float]]
+    message: str
+    success: bool
