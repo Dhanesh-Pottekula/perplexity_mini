@@ -1,4 +1,5 @@
 import { Document, Model, FilterQuery, UpdateQuery } from "mongoose";
+import Doc from "../models/mongo/Doc";
 
 // Generic MongoDB service class
 export class MongoService<T extends Document> {
@@ -15,6 +16,23 @@ export class MongoService<T extends Document> {
       return await document.save();
     } catch (error) {
       throw new Error(`Failed to create document: ${error}`);
+    }
+  }
+
+  // Create or update a document (upsert)
+  async upsert(query: FilterQuery<T>, data: Partial<T>): Promise<T> {
+    try {
+      return await this.model.findOneAndUpdate(
+        query,
+        data,
+        { 
+          new: true, 
+          upsert: true, 
+          setDefaultsOnInsert: true 
+        }
+      );
+    } catch (error) {
+      throw new Error(`Failed to upsert document: ${error}`);
     }
   }
 

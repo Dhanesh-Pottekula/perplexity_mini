@@ -4,26 +4,42 @@ import { scrapeWebsite } from "../workers/scrapingWorker";
 import { sleep } from "../helpers/timers";
 import { getEmbeddings } from "../db/services/apiService";
 import { chunkText } from "../helpers/formettors";
+import { urlMongoService } from "../db/models/mongo/UrlObj";
+import { QUEUE_NAMES, URL_STATUS, ERROR_MESSAGES } from "../constants";
+import mongoose from "mongoose";
+
+
 
 async function processUrl(url: string) {
+
   try {
-
-
     const result = await scrapeWebsite(url);
     const { content, links, title } = result;
+    const document = await urlMongoService.upsert({url: url}, {
+      url, 
+      title, 
+      links,
+      status: URL_STATUS.VISITING,
+      depth: 0
+    });
+    const url_id = document._id as mongoose.Types.ObjectId;
     const chunkContent = chunkText(content, 500, 50);
 
-    const embeddings = await getEmbeddings(chunkContent);
+const data = {
+  chunkContent,
+  url_id: url_id.toString()
+}
+    const embeddings = await getEmbeddings(data);
 
-    console.log(embeddings);
+//     console.log(embeddings);
     // const getCleanContent = getCleanContent(content);
   } catch (err) {
-    console.error("❌ Error processing URL:", url, err);
+    console.error("❌", ERROR_MESSAGES.URL_PROCESSING_ERROR, url, err);
   }
 }
 
 
 // Subscribe to the queue
-redisQueue.subscribe("urls_queue" as QueueName, processUrl).catch(err => {
-  console.error("❌ Failed to start queue subscription:", err);
+redisQueue.subscribe(QUEUE_NAMES.URLS_QUEUE as QueueName, processUrl).catch(err => {
+  console.error("❌", ERROR_MESSAGES.QUEUE_SUBSCRIPTION_ERROR, err);
 });

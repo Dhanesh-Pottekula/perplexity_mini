@@ -1,26 +1,34 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { MongoService } from "../../services/mongoService";
+import { URL_STATUS, UrlStatus } from "../../../constants";
 
 interface IUrl extends Document {
   url: string;
-  parentUrl?: string;
-  status: "pending" | "visiting" | "visited" | "failed";
+  parentUrl?: string|null;
+  status: UrlStatus;
   depth: number;
   discoveredAt: Date;
   content?: string;
   title?: string;
+  links?: string[];
   meta?: any;
 }
 
 const UrlSchema = new Schema<IUrl>({
   url: { type: String, unique: true },
-  parentUrl: String,
-  status: { type: String, enum: ["pending", "visiting", "visited", "failed"], default: "pending" },
+  status: { 
+    type: String, 
+    enum: Object.values(URL_STATUS), 
+    default: URL_STATUS.PENDING 
+  },
   depth: { type: Number, default: 0 },
   discoveredAt: { type: Date, default: Date.now },
-  content: String, // full HTML/text
   title: String,
+  links: [String],
   meta: mongoose.Schema.Types.Mixed // any other metadata
 });
 
 const Url = mongoose.model<IUrl>("Url", UrlSchema);
 export default Url;
+
+export const urlMongoService = new MongoService(Url);
