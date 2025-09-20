@@ -1,18 +1,19 @@
 import { redisQueue } from "../db/services/redisService";
 import { QueueName } from "../interfaces/config";
+import { scrapeWebsite } from "../workers/scrapingWorker";
+import { sleep } from "../helpers/timers";
 
 async function processUrl(url: string) {
   try {
-    // Here goes your scraping logic using Playwright or other libraries
-    // e.g., await scrapeWebsite(url);
-    
-    // For now, just simulate processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
+
+    const result = await scrapeWebsite(url);
+    const { content, links, title } = result;
+    console.log("✅ Successfully processed URL:", url, content);
+
+    // const getCleanContent = getCleanContent(content);
   } catch (err) {
     console.error("❌ Error processing URL:", url, err);
-    // Optionally, push back to Redis for retry
-    await redisQueue.push("urls_queue" as QueueName, url);
   }
 }
 
