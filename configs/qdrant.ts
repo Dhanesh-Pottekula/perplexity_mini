@@ -32,9 +32,8 @@ export async function ensureQdrantCollection(
     await qdrant.createCollection(collectionName, {
       vectors: { size: vectorSize, distance },
     });
-    console.log(`✅ Qdrant collection '${collectionName}' ready`);
   } catch (err) {
-      console.log(`⚡ Collection '${collectionName}' already exists`);
+      // Collection already exists
 
   }
   return qdrant;

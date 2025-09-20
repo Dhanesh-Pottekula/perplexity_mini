@@ -12,7 +12,6 @@ export class UrlController {
   async addUrl(req: Request, res: Response): Promise<void> {
     try {
       const { url } = req.body;
-
       if (!url) {
         sendErrorResponse(res, 400, 'URL is required in request body');
         return;
@@ -71,11 +70,21 @@ export class UrlController {
    */
   async healthCheck(req: Request, res: Response): Promise<void> {
     try {
-      res.status(200).json({
-        success: true,
-        message: 'URL service is healthy',
-        timestamp: new Date().toISOString()
-      });
+      const isHealthy = await urlService.healthCheck();
+      
+      if (isHealthy) {
+        res.status(200).json({
+          success: true,
+          message: 'URL service is healthy',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(503).json({
+          success: false,
+          message: 'URL service is unhealthy - Redis connection issue',
+          timestamp: new Date().toISOString()
+        });
+      }
     } catch (error) {
       console.error('URL service health check failed:', error);
       sendErrorResponse(res, 500, 'URL service health check failed');

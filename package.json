@@ -2,12 +2,15 @@
   "name": "perplexity",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run fix-imports",
+    "fix-imports": "node fix-imports.js",
     "start": "node dist/server.js",
-    "dev": "ts-node --esm app.ts",
-    "dev:watch": "nodemon --exec ts-node --esm app.ts",
+    "start:debug": "node --inspect-brk dist/server.js",
+    "dev": "tsx server.ts",
+    "dev:watch": "nodemon --inspect --exec \"tsx\" server.ts",
     "start:pm2": "pm2 start ecosystem.config.cjs",
     "pm2:reload": "pm2 reload perplexity",
     "pm2:restart": "pm2 restart perplexity",
@@ -40,6 +43,7 @@
     "nodemon": "^3.1.10",
     "pm2": "^5.4.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }
 }

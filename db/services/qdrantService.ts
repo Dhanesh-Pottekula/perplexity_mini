@@ -25,7 +25,6 @@ export class QdrantService {
           payload: point.payload || {}
         }))
       });
-      console.log(`✅ Upserted ${points.length} points to collection '${collectionName}'`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to upsert points to '${collectionName}':`, error);
@@ -68,7 +67,6 @@ export class QdrantService {
       await this.client.delete(collectionName, {
         points: ids
       });
-      console.log(`✅ Deleted ${ids.length} points from collection '${collectionName}'`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to delete points from '${collectionName}':`, error);
