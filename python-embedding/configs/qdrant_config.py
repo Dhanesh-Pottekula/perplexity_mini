@@ -2,7 +2,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from typing import Optional
 from constants import EmbeddingConfig, ErrorMessages, SuccessMessages
-from config.envConfig import config
+from configs.envConfig import config
 
 class QdrantConfig:
     def __init__(self):

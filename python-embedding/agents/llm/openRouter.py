@@ -6,7 +6,7 @@ from typing import AsyncGenerator, TypeVar, Type, Any, cast
 
 from pydantic import BaseModel
 from openai import OpenAI
-from config.envConfig import config
+from configs.envConfig import config
 from json_repair import repair_json  # type: ignore[import]
 
 GenericType = TypeVar("GenericType", bound=BaseModel)

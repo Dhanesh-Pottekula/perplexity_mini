@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from routes.embedding_routes import embedding_router
 from startup import startup
 import logging
-from config.envConfig import config
+from configs.envConfig import config
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper(), logging.INFO))

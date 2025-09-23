@@ -4,7 +4,7 @@ This module handles all initialization tasks that need to run when the app start
 """
 import logging
 from configs.qdrant_config import qdrant_config
-from config.envConfig import config
+from configs.envConfig import config
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper(), logging.INFO))
