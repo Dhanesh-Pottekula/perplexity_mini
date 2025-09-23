@@ -3,3 +3,4 @@ uvicorn
 sentence-transformers
 pydantic
 qdrant-client
+python-dotenv

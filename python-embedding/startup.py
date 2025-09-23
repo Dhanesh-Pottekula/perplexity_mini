@@ -4,9 +4,10 @@ This module handles all initialization tasks that need to run when the app start
 """
 import logging
 from configs.qdrant_config import qdrant_config
+from config.envConfig import config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper(), logging.INFO))
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +19,7 @@ async def startup():
         # Initialize collections
         await qdrant_config.ensure_collection(
             collection_name="urls",
-            vector_size=384  # Size for paraphrase-MiniLM-L12-v2 model
+            vector_size=config.VECTOR_SIZE
         )
         
         logger.info("Application startup completed successfully")

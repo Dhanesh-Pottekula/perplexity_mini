@@ -1,6 +1,7 @@
 """
 Constants to prevent spelling mistakes and ensure consistency across the application.
 """
+from configs.envConfig import config
 
 # Collection Names
 class CollectionNames:
@@ -23,8 +24,8 @@ class QueueNames:
 
 # Embedding Model Configuration
 class EmbeddingConfig:
-    MODEL_NAME = "paraphrase-MiniLM-L12-v2"
-    VECTOR_SIZE = 384
+    MODEL_NAME = config.EMBEDDING_MODEL
+    VECTOR_SIZE = config.VECTOR_SIZE
     DISTANCE_METRIC = "Cosine"
 
 # API Endpoints

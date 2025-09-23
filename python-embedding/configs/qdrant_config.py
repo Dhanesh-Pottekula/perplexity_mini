@@ -1,12 +1,12 @@
-import os
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from typing import Optional
 from constants import EmbeddingConfig, ErrorMessages, SuccessMessages
+from config.envConfig import config
 
 class QdrantConfig:
     def __init__(self):
-        self.qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.qdrant_url = config.QDRANT_URL
         self.client: Optional[QdrantClient] = None
     
     def get_client(self) -> QdrantClient:
