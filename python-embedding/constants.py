@@ -8,6 +8,7 @@ class CollectionNames:
     URLS = "urls"
     DOCUMENTS = "documents"
     WEB_CONTENT = "web_content"
+    TOPICS = "topics"
 
 # URL Status Values
 class UrlStatus:
@@ -60,3 +61,9 @@ class PayloadKeys:
     DEPTH = "depth"
     DISCOVERED_AT = "discovered_at"
     META = "meta"
+    TOPIC_ID = "topic_id"
+    TOPIC_NAME = "topic_name"
+    TAGS = "tags"
+    USER_ID = "user_id"
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"

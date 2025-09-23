@@ -35,8 +35,7 @@ Your goal is to identify the main themes, concepts, and entities in the content.
 
 # OUTPUT FORMAT
 Return a single JSON object with the following structure:
-{
-  "topics": [
+{[
     {
       "topic_name": "generic topic name",
       "tags": ["tag1", "tag2", "tag3"]
