@@ -42,11 +42,11 @@ class Embedding:
             print(f"{ErrorMessages.UPSERT_ERROR}: {e}")
 
 
-    async def upsert_embeddings_topics_qdrant(self, texts: List[StorageAgentPydanticModels.TopicExtractionList], url_id: str = None) -> None:
+    async def upsert_embeddings_topics_qdrant(self, texts: List[StorageAgentPydanticModels.TopicExtractionItem], url_id: str = None) -> None:
         """Generate embeddings for texts and upsert them to Qdrant collection with topic merging logic"""
         try:
             # Step 1: Prepare array of unique topic names
-            topic_names = list(set([topic_decision.topic_name for topic_decision in texts]))
+            topic_names = list(set([topic.topic_name for topic in texts]))
             
             # Step 2: Get all existing topics that match any of the topic names in a single DB call
             existing_topics: Dict[str, Dict[str, Any]] = {}

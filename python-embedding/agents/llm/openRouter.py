@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from configs.envConfig import config
 from json_repair import repair_json  # type: ignore[import]
+from models.internalModals import OpenRouterChatModels
 
 GenericType = TypeVar("GenericType", bound=BaseModel)
 
@@ -24,14 +25,14 @@ class OpenRouter:
         """Initialize the OpenRouter client."""
         # OpenRouter is OpenAI-compatible; set base_url and API key
         api_key: str = str(config.OPENROUTER_API_KEY or "")
-        self.client = OpenAI(api_key=api_key, base_url=config.OPENROUTER_BASE_URL)
-        self.model: str = "google/gemini-2.5-flash"
+        self.client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
+        self.model: str = OpenRouterChatModels.OpenRouterChatModelTypes.DEEPSEEK_CHAT_V3_1
 
     async def generate_text_as_stream(
-        self, prompt: str, system_instruction: str, enable_web_search: bool = False
+        self, prompt: str, system_instruction: str, enable_web_search: bool = False, model: str = None
     ) -> AsyncGenerator[str, None]:
         """Generate text for a prompt with real streaming (delta chunks)."""
-        model = self.model
+        model = model or self.model
         # if enable_web_search:
         #     model = self.model + ":online"
         stream = self.client.chat.completions.create(
@@ -54,6 +55,7 @@ class OpenRouter:
         system_instruction: str,
         response_model: Type[GenericType],
         files: list[bytes] | None = None,
+        model: str = None
     ) -> GenericType:
         """Generate JSON output and parse into the given Pydantic model."""
         user_content = (
@@ -61,7 +63,7 @@ class OpenRouter:
             + prompt
         )
         response = self.client.chat.completions.create(
-            model=self.model,
+            model=model or self.model,
             messages=[
                 {"role": "system", "content": system_instruction},
                 {"role": "user", "content": user_content},
@@ -69,10 +71,10 @@ class OpenRouter:
         )
         content = response.choices[0].message.content or "{}"
         json_str = repair_json(content)
-        return response_model(**json.loads(json_str))
+        return response_model.model_validate(json.loads(json_str))
 
     async def generate_text_with_files_as_stream(
-        self, prompt: str, files: list[tuple[str, bytes]]
+        self, prompt: str, files: list[tuple[str, bytes]], model: str = None
     ) -> AsyncGenerator[str, None]:
         """Generate text from a prompt with files as a stream via OpenRouter."""
         content_parts: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
@@ -98,7 +100,7 @@ class OpenRouter:
                 )
 
         create_kwargs: dict[str, Any] = {
-            "model": self.model,
+            "model": model or self.model,
             "messages": cast(
                 Any,
                 [

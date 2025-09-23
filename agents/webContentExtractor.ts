@@ -29,10 +29,9 @@ const data = {
   chunkContent,
   url_id: url_id.toString()
 }
-    const embeddings = await getEmbeddings(data);
+  await getEmbeddings(data);
 
-//     console.log(embeddings);
-    // const getCleanContent = getCleanContent(content);
+  
   } catch (err) {
     console.error("❌", ERROR_MESSAGES.URL_PROCESSING_ERROR, url, err);
   }

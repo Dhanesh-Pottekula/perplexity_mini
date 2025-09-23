@@ -1,12 +1,12 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { qdrantDistanceTypes } from "../interfaces/config";
+import { QdrantDistanceTypes } from "../interfaces/config";
 import { envDefaults } from "../envDefaults";
 
 let client: QdrantClient;
 
 // Constants
-const VECTOR_SIZE = 1536;
-const VECTOR_DISTANCE: qdrantDistanceTypes = "Cosine";
+const VECTOR_SIZE = 384;
+const VECTOR_DISTANCE: QdrantDistanceTypes = "Cosine";
 
 // Singleton Qdrant client
 export function getQdrantClient(): QdrantClient {
@@ -25,7 +25,7 @@ export function getQdrantClient(): QdrantClient {
 export async function ensureQdrantCollection(
   collectionName: string,
   vectorSize: number = VECTOR_SIZE,
-  distance: qdrantDistanceTypes = VECTOR_DISTANCE
+  distance: QdrantDistanceTypes = VECTOR_DISTANCE
 ): Promise<QdrantClient> {
   const qdrant = getQdrantClient();
   try {

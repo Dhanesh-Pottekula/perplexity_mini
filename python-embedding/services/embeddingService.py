@@ -11,10 +11,13 @@ class EmbeddingService:
     async def getEmbeddingsAndTriggerPipeline(
         self, url_id: str, texts: List[str]
     ) -> None:
-        await asyncio.gather(
-            self.embedding.upsert_embeddings_urls(url_id, texts),
-            storagePipeline.extractTopicsFromContentWithTags(url_id, texts),
-        )
+        try:
+            await asyncio.gather(
+                self.embedding.upsert_embeddings_urls(url_id, texts),
+                storagePipeline.process({"url_id": url_id, "content": texts}),
+            )
+        except Exception as e:
+            print(f"{e}")
 
 
 embeddingService = EmbeddingService()

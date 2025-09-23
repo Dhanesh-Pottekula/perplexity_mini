@@ -35,7 +35,7 @@ Your goal is to identify the main themes, concepts, and entities in the content.
 
 # OUTPUT FORMAT
 Return a single JSON object with the following structure:
-{[
+{topics:[
     {
       "topic_name": "generic topic name",
       "tags": ["tag1", "tag2", "tag3"]
@@ -75,5 +75,3 @@ Remember: Create topics that can be reused across similar content types and doma
             "system_instruction": system_instruction,
             "user_prompt": user_prompt
         }
-
-storagePrompts = StoragePrompts()

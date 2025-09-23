@@ -12,7 +12,7 @@ export interface EmbeddingResponse {
   embeddings: number[][];
 }
 
-// Specific function for embeddings service
+// stores the text in qdrant, generates the topics with tags and stores them in qdrant
 export async function getEmbeddings(data: {url_id: string, chunkContent: string[]}): Promise<EmbeddingResponse> {
     const embeddingServiceUrl = envDefaults.EMBEDDING_SERVICE_URL;
     const requestData: EmbeddingRequest = { 

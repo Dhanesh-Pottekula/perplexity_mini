@@ -3,11 +3,11 @@
   "configurations": [
     {
       "name": "Python: FastAPI (uvicorn)",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "args": [
-        "startup:app",
+        "main:app",
         "--log-level", "debug"
       ],
       "jinja": true,
