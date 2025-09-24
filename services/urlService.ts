@@ -1,18 +1,24 @@
 import { redisQueue } from '../db/services/redisService';
 import { QueueName } from '../interfaces/config';
-
+import { QUEUE_NAMES } from '../interfaces/constants';
+  
 export class UrlService {
   private queueManager = redisQueue;
 
   /**
-   * Add a URL to the urls_queue
+   * Add a URL with depth to the urls_queue
    * @param url - The URL to add to the queue
+   * @param depth - The depth level of the URL
    * @returns Promise<number> - The number of items in the queue after adding
    */
-  async addUrlToQueue(url: string): Promise<number> {
+  async addUrlToQueue(url: string, depth: number): Promise<number> {
     try {
-      // Add URL to the urls_queue
-      const queueLength = await this.queueManager.push('urls_queue' as QueueName, url);
+      // Add URL with depth to the urls_queue
+      const urlData = {
+        link: url,
+        depth: depth
+      };
+      const queueLength = await this.queueManager.push(QUEUE_NAMES.URLS_QUEUE as QueueName, urlData);
       
       return queueLength;
     } catch (error) {
@@ -22,15 +28,16 @@ export class UrlService {
   }
 
   /**
-   * Add multiple URLs to the urls_queue
+   * Add multiple URLs with depth to the urls_queue
    * @param urls - Array of URLs to add to the queue
+   * @param depth - The depth level for all URLs
    * @returns Promise<number[]> - Array of queue lengths after each addition
    */
-  async addUrlsToQueue(urls: string[]): Promise<number[]> {
+  async addUrlsToQueue(urls: string[], depth: number): Promise<number[]> {
     const results: number[] = [];
     
     for (const url of urls) {
-      const queueLength = await this.addUrlToQueue(url);
+      const queueLength = await this.addUrlToQueue(url, depth);
       results.push(queueLength);
     }
     

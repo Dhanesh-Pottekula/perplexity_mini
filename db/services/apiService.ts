@@ -1,6 +1,6 @@
 import { envDefaults } from "../../envDefaults";
 import { apiService } from "../../helpers/fetchHelpers";
-import { API_ENDPOINTS, PAYLOAD_KEYS } from "../../constants";
+import { API_ENDPOINTS, PAYLOAD_KEYS } from "../../interfaces/constants";
 
 // Types for embeddings service
 export interface EmbeddingRequest {

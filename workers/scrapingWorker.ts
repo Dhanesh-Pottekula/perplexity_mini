@@ -1,7 +1,12 @@
 import { getBrowser } from "../configs/playWrite";
+import { TaskQueue } from "../configs/pQueue";
+
+const scrapeQueue = new TaskQueue(10); // run max 10 scrapes at once
 
 export async function scrapeWebsite(url: string) {
   const browser = await getBrowser();
+  console.log("waiting in queue:", scrapeQueue.size);
+  console.log("running in queue:", scrapeQueue.pending);
   const page = await browser.newPage();
 
   try {
@@ -23,4 +28,17 @@ export async function scrapeWebsite(url: string) {
 
 export function getCleanContent(content: string) {
   return content.replace(/<[^>]*>?/g, '').trim();
+}
+
+
+
+export async function ScrapeWebsiteEnqueue(url: string) {
+  try {
+   
+    const result = await scrapeQueue.add(() => scrapeWebsite(url));
+    return result; // { content, links, title }
+  } catch (err) {
+    console.error("Failed to scrape", url, err);
+    throw err; // rethrow so caller knows it failed
+  }
 }

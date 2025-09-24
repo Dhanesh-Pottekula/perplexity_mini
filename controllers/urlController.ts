@@ -6,24 +6,31 @@ import { sendErrorResponse } from '../helpers/responseHelpers';
 
 export class UrlController {
   /**
-   * Add a single URL to the queue
+   * Add a single URL with depth to the queue
    * POST /api/urls
    */
   async addUrl(req: Request, res: Response): Promise<void> {
     try {
-      const { url } = req.body;
+      const { url, depth } = req.body;
+      
       if (!url) {
         sendErrorResponse(res, 400, 'URL is required in request body');
         return;
       }
 
-      const queueLength = await urlService.addUrlToQueue(url);
+      if (typeof depth !== 'number' || depth < 0) {
+        sendErrorResponse(res, 400, 'Depth must be a non-negative number');
+        return;
+      }
+
+      const queueLength = await urlService.addUrlToQueue(url, depth);
 
       res.status(201).json({
         success: true,
-        message: 'URL added to queue successfully',
+        message: 'URL with depth added to queue successfully',
         data: {
           url,
+          depth,
           queueLength
         }
       });
@@ -34,25 +41,31 @@ export class UrlController {
   }
 
   /**
-   * Add multiple URLs to the queue
+   * Add multiple URLs with depth to the queue
    * POST /api/urls/batch
    */
   async addUrls(req: Request, res: Response): Promise<void> {
     try {
-      const { urls } = req.body;
+      const { urls, depth } = req.body;
 
       if (!urls || !Array.isArray(urls) || urls.length === 0) {
         sendErrorResponse(res, 400, 'URLs array is required and must not be empty');
         return;
       }
 
-      const results = await urlService.addUrlsToQueue(urls);
+      if (typeof depth !== 'number' || depth < 0) {
+        sendErrorResponse(res, 400, 'Depth must be a non-negative number');
+        return;
+      }
+
+      const results = await urlService.addUrlsToQueue(urls, depth);
 
       res.status(201).json({
         success: true,
-        message: `Successfully added ${urls.length} URLs to queue`,
+        message: `Successfully added ${urls.length} URLs with depth ${depth} to queue`,
         data: {
           urls,
+          depth,
           queueLengths: results,
           totalAdded: urls.length
         }
@@ -62,6 +75,7 @@ export class UrlController {
       sendErrorResponse(res, 400, error instanceof Error ? error.message : 'Failed to add URLs to queue');
     }
   }
+
 
   
   /**

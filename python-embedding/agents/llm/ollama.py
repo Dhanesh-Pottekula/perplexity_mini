@@ -1,16 +1,20 @@
 """Agents - OLAMA Client via Nginx."""
 
-import base64
 import json
-from typing import AsyncGenerator, TypeVar, Type, Any
+import logging
+from typing import AsyncGenerator, TypeVar, Type
 
 import httpx
 from pydantic import BaseModel
 from json_repair import repair_json  # type: ignore[import]
 from models.internalModals import OpenRouterChatModels  # Keep your models
 from configs.envConfig import config
+from core.helpers import retry_with_exponential_backoff
 
 GenericType = TypeVar("GenericType", bound=BaseModel)
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 
 class OlamaClient:
@@ -21,6 +25,7 @@ class OlamaClient:
         self.model: str = OpenRouterChatModels.OlamaChatModelTypes.LLAMA3_8B
         self.nginx_url_chat: str = config.NGINX_URL+"/api/chat"
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0, max_delay=30.0)
     async def generate_text_as_stream(
         self, prompt: str, system_instruction: str, model: str = None
     ) -> AsyncGenerator[str, None]:
@@ -35,15 +40,18 @@ class OlamaClient:
             "stream": False,
         }
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            logger.info(f"Making request to {self.nginx_url_chat} with model {model}")
             response = await client.post(self.nginx_url_chat, json=payload)
             response.raise_for_status()
             content: str = response.json()["message"]["content"]
+            logger.info(f"Successfully received response from {self.nginx_url_chat}")
 
         chunk_size = 100
         for i in range(0, len(content), chunk_size):
             yield content[i : i + chunk_size]
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=1.0, max_delay=30.0)
     async def generate_structured_output(
     self,
     prompt: str,
@@ -63,10 +71,18 @@ class OlamaClient:
             ],
             "stream": False,
         }
-        async with httpx.AsyncClient() as client:
-            response = await client.post(self.nginx_url_chat, json=payload)
-            response.raise_for_status()
-            content = response.json()["message"]["content"] or "{}"
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                logger.info(f"Making structured output request to {self.nginx_url_chat} with model {model}")
+                response = await client.post(self.nginx_url_chat, json=payload)
+                response.raise_for_status()
+                content = response.json()["message"]["content"] or "{}"
+                logger.info(f"Successfully received structured response from {self.nginx_url_chat}")
 
-        json_str = repair_json(content)
-        return response_model.model_validate(json.loads(json_str))
+            json_str = repair_json(content)
+            result = response_model.model_validate(json.loads(json_str))
+            logger.info("Successfully parsed and validated structured output")
+            return result
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.error(f"Failed to parse JSON response: {e}. Content: {content[:200]}...")
+            raise

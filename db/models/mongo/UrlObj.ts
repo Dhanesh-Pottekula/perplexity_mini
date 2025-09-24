@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { MongoService } from "../../services/mongoService";
-import { URL_STATUS, UrlStatus } from "../../../constants";
+import { URL_STATUS, UrlStatus } from "../../../interfaces/constants";
 
 interface IUrl extends Document {
   url: string;

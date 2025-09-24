@@ -91,14 +91,17 @@ class RedisQueue implements QueueManager {
   }
 
   // Push an item to a queue (LPUSH) - uses publisher connection
-  async push(queue: QueueName, value: string): Promise<number> {
+  async push(queue: QueueName, value: object): Promise<number> {
     try {
       // Ensure Redis publisher is connected before pushing
       if (this.publisherRedis.status !== 'ready') {
         await this.initializeConnection(this.publisherRedis, "Publisher");
       }
       
-      const result = await this.publisherRedis.lpush(queue, value);
+      // Serialize object to JSON string
+      const serializedValue = JSON.stringify(value);
+      
+      const result = await this.publisherRedis.lpush(queue, serializedValue);
       return result;
     } catch (error) {
       console.error(`❌ Error pushing to queue ${queue}:`, error);
@@ -123,7 +126,7 @@ class RedisQueue implements QueueManager {
   }
 
   // Subscribe to a queue (blocking) using BRPOP - uses subscriber connection
-  async subscribe(queue: QueueName, callback: (value: string) => void) {
+  async subscribe(queue: QueueName, callback: (value: object) => void) {
     // Ensure Redis subscriber is connected before starting subscription
     if (this.subscriberRedis.status !== 'ready') {
       setTimeout(() => {
@@ -139,7 +142,9 @@ class RedisQueue implements QueueManager {
           const result = await this.subscriberRedis.brpop(queue, 0); // 0 = block indefinitely
           if (result) {
             const [, value] = result;
-            callback(value);
+            // Parse JSON string to object and pass to callback
+            const parsedValue = JSON.parse(value);
+            callback(parsedValue);
           }
         } catch (err) {
           console.error("Redis subscriber queue error:", err);
