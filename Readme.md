@@ -39,3 +39,7 @@ curl http://localhost:8080/api/chat -d '{
   }'
   echo -e "\n"  # Add newline between requests
 done
+
+curl -X POST "http://localhost:8080/api/chat" \
+-H "Content-Type: application/json" \
+-d @scripts/prompts.json

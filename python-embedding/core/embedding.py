@@ -62,7 +62,7 @@ class Embedding:
                 )
                 
                 # Get all matching topics from the database
-                existing_topics_records, _, __ = self.client.scroll(
+                existing_topics_records, _ = self.client.scroll(
                     collection_name=CollectionNames.TOPICS,
                     scroll_filter=scroll_filter,
                     limit=len(topic_names),  # Get all matching topics
@@ -94,10 +94,18 @@ class Embedding:
                     # Remove duplicates while preserving order
                     tags = list(dict.fromkeys(tags))
                     created_at_val = payload[PayloadKeys.CREATED_AT]
+                    
+                    # Handle URL IDs for existing topics - get existing URL IDs and add new one if not already present
+                    existing_url_ids = payload.get(PayloadKeys.URL_IDS, [])
+                    if url_id and url_id not in existing_url_ids:
+                        existing_url_ids.append(url_id)
+                    url_ids = existing_url_ids
                 else:
                     # Generate new topic_id if not found in DB
                     topic_id = str(uuid.uuid4())
                     created_at_val = created_at
+                    # For new topics, create array with current URL ID
+                    url_ids = [url_id] if url_id else []
 
                 # Prepare tags text for embedding
                 tags_text = " ".join(tags)
@@ -109,7 +117,7 @@ class Embedding:
                 
                 # Create the topic payload
                 topic_payload = {
-                    PayloadKeys.URL_ID: url_id,
+                    PayloadKeys.URL_IDS: url_ids,
                     PayloadKeys.TOPIC_ID: topic_id,
                     PayloadKeys.TOPIC_NAME: topic_name,
                     PayloadKeys.TAGS: tags,

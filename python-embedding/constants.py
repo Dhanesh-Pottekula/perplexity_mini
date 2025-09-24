@@ -52,6 +52,7 @@ class SuccessMessages:
 # Payload Keys
 class PayloadKeys:
     URL_ID = "url_id"
+    URL_IDS = "url_ids"  # Array of URL IDs for topics
     TEXT = "text"
     INDEX = "index"
     TITLE = "title"

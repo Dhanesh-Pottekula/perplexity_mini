@@ -1,5 +1,7 @@
-
 import re
+import json
+
+from json_repair import repair_json
 class StoragePrompts:
     def __init__(self):
         pass
@@ -23,27 +25,17 @@ class StoragePrompts:
         # Step 4: Trim leading/trailing whitespace
         content = content.strip()
 
-        # Step 5: Truncate if too long (adjust length as needed)
-        max_length = 1000
-        if len(content) > max_length:
-            content = content[:max_length]
-
         # System instruction for the API
-        system_instruction = (
-            "Extract generic topics and tags from content. Focus on broad, reusable themes "
-            "rather than specific details. Return JSON format: "
-            '{"topics":[{"topic_name": "generic topic", "tags": ["tag1", "tag2"]}]} '
-            "All topics and tags must be lowercase."
-        )
+        system_instruction = "Extract generic topics and tags from content. Focus on broad, reusable themes rather than specific details. Return JSON format: {'topics':[{'topic_name': 'generic topic', 'tags': ['tag1', 'tag2']}]} All topics and tags must be lowercase.Extract 3-5 generic topics with 2-5 tags each. Use broad themes like 'artificial intelligence' not 'ChatGPT implementation'. Return JSON only."
+        
 
-        # User prompt with cleaned content
+        # User prompt with cleaned content - escape special characters for JSON
+        # Replace problematic characters that could break JSON format
+        escaped_content = content.replace('\\', '\\\\').replace('"', '').replace("'", '').replace('\n', '').replace('\r', '').replace('\t', ' ')
+        
         user_prompt_text = (
-            f"Content:\n{content}\n\n"
-            "Extract 3-5 generic topics with 2-5 tags each. "
-            "Use broad themes like 'artificial intelligence' not 'ChatGPT implementation'. "
-            "Return JSON only."
+            f"Content:{escaped_content}"
         )
-
         return {
             "system_instruction": system_instruction,
             "user_prompt": user_prompt_text
