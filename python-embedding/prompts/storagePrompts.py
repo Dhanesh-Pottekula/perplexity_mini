@@ -1,77 +1,50 @@
+
+import re
 class StoragePrompts:
     def __init__(self):
         pass
-    
-
-    def extractTopicsFromContentWithTagsPrompt(self, content: str) -> dict:
+    def extractTopicsFromContentWithTagsPrompt(self, content) -> dict:
         """Extract generic topics and tags from content for knowledge storage."""
         
-        system_instruction = """You are a content analysis expert that extracts generic topics and tags from any type of content.
-Your goal is to identify the main themes, concepts, and entities in the content.
+        # If content is a list, join into a single string
+        if isinstance(content, list):
+            content = " ".join(str(c) for c in content)
 
-# CORE PRINCIPLES
-- Extract GENERIC, high-level topics rather than specific details
-- Focus on broad themes and concepts that can be reused across similar content
-- Create topics that are searchable and meaningful for future content retrieval
+        # Step 1: Remove HTML tags or fragments
+        content = re.sub(r'<[^>]+>', ' ', content)
 
-# TOPIC EXTRACTION RULES
-- **Genericity**: Prefer broad, reusable topics over specific instances
-  - Use "software development" instead of "React development"
-  - Use "business strategy" instead of "Q4 marketing strategy"
-  - Use "health and wellness" instead of "yoga classes"
-- **Entity Types**: Include different types of entities:
-  - Concepts: "machine learning", "sustainability", "leadership"
-  - Domains: "healthcare", "finance", "education"
-  - Activities: "research", "development", "analysis"
-  - Tools/Methods: "data analysis", "user research", "testing"
+        # Step 2: Remove multiple newlines, tabs, and extra spaces
+        content = re.sub(r'[\r\n\t]+', ' ', content)
+        content = re.sub(r' +', ' ', content)
 
-# TAG CREATION RULES
-- Create 5-10 relevant tags per topic
-- Tags should be:
-  - Lowercase and hyphenated for multi-word tags
-  - Specific enough to be searchable
-  - Include synonyms and related terms
-  - Cover both general and specific aspects
+        # Step 3: Remove non-printable/control characters
+        content = ''.join(c for c in content if c.isprintable())
 
-# OUTPUT FORMAT
-Return a single JSON object with the following structure:
-{topics:[
-    {
-      "topic_name": "generic topic name",
-      "tags": ["tag1", "tag2", "tag3"]
-    }
-  ]
-}
+        # Step 4: Trim leading/trailing whitespace
+        content = content.strip()
 
-# QUALITY GUIDELINES
-- Each topic should be meaningful and reusable
-- Avoid overly specific or time-bound topics
-- Ensure topics can be applied to similar content
-- All topic names and tags must be lowercase"""
+        # Step 5: Truncate if too long (adjust length as needed)
+        max_length = 1000
+        if len(content) > max_length:
+            content = content[:max_length]
 
-        user_prompt = f"""CONTENT TO ANALYZE:
-{content}
+        # System instruction for the API
+        system_instruction = (
+            "Extract generic topics and tags from content. Focus on broad, reusable themes "
+            "rather than specific details. Return JSON format: "
+            '{"topics":[{"topic_name": "generic topic", "tags": ["tag1", "tag2"]}]} '
+            "All topics and tags must be lowercase."
+        )
 
-INSTRUCTIONS:
-1. Read through the content carefully
-2. Identify the main generic topics and themes
-3. Create 5-10 relevant tags for each topic
-4. Focus on creating reusable, generic topics rather than specific details
-5. Return only the JSON object, no additional text
-
-EXAMPLES OF GENERIC TOPICS:
-- "artificial intelligence" (not "ChatGPT implementation")
-- "data analysis" (not "sales data analysis for Q3")
-- "user experience" (not "mobile app UX redesign")
-- "business strategy" (not "startup growth strategy")
-- "health and wellness" (not "yoga for beginners")
-- "education" (not "online course development")
-- "sustainability" (not "carbon footprint reduction")
-- "leadership" (not "team management skills")
-
-Remember: Create topics that can be reused across similar content types and domains."""
+        # User prompt with cleaned content
+        user_prompt_text = (
+            f"Content:\n{content}\n\n"
+            "Extract 3-5 generic topics with 2-5 tags each. "
+            "Use broad themes like 'artificial intelligence' not 'ChatGPT implementation'. "
+            "Return JSON only."
+        )
 
         return {
             "system_instruction": system_instruction,
-            "user_prompt": user_prompt
+            "user_prompt": user_prompt_text
         }

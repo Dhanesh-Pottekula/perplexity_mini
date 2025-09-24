@@ -129,6 +129,9 @@ class OpenRouterChatModels(StrEnum):
 
         #free models
         DEEPSEEK_CHAT_V3_1 = "deepseek/deepseek-chat-v3.1:free"
-
+        DEEPSEEK_CHAT_R1 = "deepseek/deepseek-r1:free"
         # Default model (currently used in OpenRouter implementation)
         DEFAULT = GEMINI_2_5_FLASH
+
+    class OlamaChatModelTypes(StrEnum):
+        LLAMA3_8B = "llama3.1:8b"

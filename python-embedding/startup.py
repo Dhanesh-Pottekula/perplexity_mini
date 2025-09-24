@@ -21,6 +21,10 @@ async def startup():
             collection_name="urls",
             vector_size=config.VECTOR_SIZE
         )
+        await qdrant_config.ensure_collection(
+            collection_name="topics",
+            vector_size=config.VECTOR_SIZE
+        )
         
         logger.info("Application startup completed successfully")
         

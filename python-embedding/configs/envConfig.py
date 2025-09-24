@@ -16,6 +16,8 @@ class EnvironmentConfig:
     # Qdrant Configuration
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")
 
+
+    NGINX_URL: str = os.getenv("NGINX_URL", "http://localhost:8000")
     # Embedding Model Configuration
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "paraphrase-MiniLM-L12-v2")
     VECTOR_SIZE: int = int(os.getenv("VECTOR_SIZE", "384"))

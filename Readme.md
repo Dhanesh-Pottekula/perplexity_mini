@@ -13,3 +13,29 @@ stop server by id pm2 stop <id>
 
 stop all servers   pm2 stop all 
 
+
+
+to start the ollama modals 
+
+$env:OLLAMA_HOST="0.0.0.0:11436"
+
+ollama serve
+
+
+
+
+
+
+
+
+test ollamam 
+curl http://localhost:8080/api/chat -d '{
+    "model": "llama3.1:8b",
+    "messages": [{
+      "role": "user",
+      "content": "Hello there!"
+    }],
+    "stream": false
+  }'
+  echo -e "\n"  # Add newline between requests
+done
