@@ -18,6 +18,7 @@ class EnvironmentConfig:
 
 
     NGINX_URL: str = os.getenv("NGINX_URL", "http://localhost:8000")
+    MAX_CONCURRENT_LLM_CALLS: int = int(os.getenv("MAX_CONCURRENT_LLM_CALLS", "3"))
     # Embedding Model Configuration
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "paraphrase-MiniLM-L12-v2")
     VECTOR_SIZE: int = int(os.getenv("VECTOR_SIZE", "384"))

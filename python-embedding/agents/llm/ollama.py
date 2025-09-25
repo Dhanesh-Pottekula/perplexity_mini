@@ -10,7 +10,7 @@ from json_repair import repair_json  # type: ignore[import]
 from models.internalModals import OpenRouterChatModels  # Keep your models
 from configs.envConfig import config
 from core.helpers import retry_with_exponential_backoff
-
+import asyncio
 GenericType = TypeVar("GenericType", bound=BaseModel)
 
 # Set up logging
@@ -24,6 +24,7 @@ class OlamaClient:
         """Initialize the client."""
         self.model: str = OpenRouterChatModels.OlamaChatModelTypes.LLAMA3_8B
         self.nginx_url_chat: str = config.NGINX_URL+"/api/chat"
+        self.llm_semaphore = asyncio.Semaphore(config.MAX_CONCURRENT_LLM_CALLS)
 
     @retry_with_exponential_backoff(max_retries=3, base_delay=1.0, max_delay=30.0)
     async def generate_text_as_stream(
@@ -71,18 +72,19 @@ class OlamaClient:
             ],
             "stream": False,
         }
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                logger.info(f"Making structured output request to {self.nginx_url_chat} with model {model}")
-                response = await client.post(self.nginx_url_chat, json=payload)
-                response.raise_for_status()
-                content = response.json()["message"]["content"] or "{}"
-                logger.info(f"Successfully received structured response from {self.nginx_url_chat}")
+        async with self.llm_semaphore:
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    logger.info(f"Making structured output request to {self.nginx_url_chat} with model {model}")
+                    response = await client.post(self.nginx_url_chat, json=payload)
+                    response.raise_for_status()
+                    content = response.json()["message"]["content"] or "{}"
+                    logger.info(f"Successfully received structured response from {self.nginx_url_chat}")
 
-            json_str = repair_json(content)
-            result = response_model.model_validate(json.loads(json_str))
-            logger.info("Successfully parsed and validated structured output")
-            return result
-        except (json.JSONDecodeError, ValueError) as e:
-            logger.error(f"Failed to parse JSON response: {e}. Content: {content[:200]}...")
-            raise
+                json_str = repair_json(content)
+                result = response_model.model_validate(json.loads(json_str))
+                logger.info("Successfully parsed and validated structured output")
+                return result
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.error(f"Failed to parse JSON response: {e}. Content: {content[:200]}...")
+                raise

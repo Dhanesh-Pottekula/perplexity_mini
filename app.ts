@@ -5,6 +5,7 @@ import { createCollectionsQdrant } from "./configs/qdrant";
 import { redisQueue } from "./db/services/redisService";
 import urlRoutes from "./routes/urlRoutes";
 import "./agents/webContentExtractor"; // Import the agent to start the subscription
+import "./workers/CronJobWorker"; // Import the cron job worker to start scheduled tasks
 
 export async function createApp() {
   await connectMongo();
