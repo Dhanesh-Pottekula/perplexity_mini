@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
-import { urlService } from '../services/urlService';
-import { sendErrorResponse } from '../helpers/responseHelpers';
-import { RetrivalAgent } from '../agents/retrivalAgent';
+import { Request, Response } from "express";
+import { RetrivalAgent } from "../agents/retrivalAgent";
+import { prepareSse, sendSseError, streamSse } from "../helpers/apiHelpers";
 
 
 
@@ -11,20 +10,26 @@ export class ChatController {
         this.retrivalAgent = new RetrivalAgent();
     }
 
-    async chat(req: Request, res: Response): Promise<any> {
-        try {
-            const { query } = req.body;
+    async chat(req: Request, res: Response): Promise<void> {
+        const queryParam = req.query.query;
+        const bodyQuery = (req.body || {}).query;
+        const query = typeof queryParam === "string" ? queryParam : bodyQuery;
 
-            const chat = await this.retrivalAgent.retrieve_relevant_content(query);
-            console.log("chat", chat);
-            res.status(200).json({
-                success: true,
-                message: 'Chat generated successfully',
-                data: chat
+        if (!query) {
+            prepareSse(res);
+            sendSseError(res, "Query is required");
+            return;
+        }
+
+        try {
+            await streamSse(req, res, async () => {
+                const stream = await this.retrivalAgent.retrieve_relevant_content(query);
+                return stream;
+            }, {
+                errorMessage: () => "Failed to generate chat",
             });
         } catch (error) {
-            console.error('Error generating chat:', error);
-            sendErrorResponse(res, 400, 'Failed to generate chat');
+            console.error("Error generating chat:", error);
         }
     }
 }
