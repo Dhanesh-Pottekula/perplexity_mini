@@ -11,7 +11,9 @@ export class RetrivalAgent {
 
   async retrieve_relevant_content(query: string) {
 
-    const embeddings = await getEmbeddings({text: query});
+    const embeddings = await getEmbeddings({query: query});
+
+
     // get the hot topics from the query
     // const topics = qdrantService.searchPoints(COLLECTION_NAMES.TOPICS, embeddings.embeddings, 10);
     // const response = await this.llm.generateTextAsStream(query, "You are a helpful assistant that can answer questions and help with tasks.");

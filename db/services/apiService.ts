@@ -27,7 +27,7 @@ export async function storeurlContent(data: {url_id: string, chunkContent: strin
 }
 
 
-export async function getEmbeddings(data: {text: string}): Promise<EmbeddingResponse> {
+export async function getEmbeddings(data: {query: string}): Promise<EmbeddingResponse> {
   const embeddingServiceUrl = envDefaults.EMBEDDING_SERVICE_URL;
   
   return apiService.post<EmbeddingResponse>(

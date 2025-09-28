@@ -8,6 +8,10 @@ class EmbeddingRequest(BaseModel):
     texts: List[str]
 
 
+class EmbeddingQueryRequest(BaseModel):
+    query: str
+
+
 class EmbeddingResponse(BaseModel):
     message: str
     success: bool
