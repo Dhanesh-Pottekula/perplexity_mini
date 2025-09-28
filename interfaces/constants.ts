@@ -60,6 +60,7 @@ export const SUCCESS_MESSAGES = {
 // Payload Keys
 export const PAYLOAD_KEYS = {
   URL_ID: "url_id",
+  URL_IDS: "url_ids",
   TEXT: "text",
   INDEX: "index",
   TITLE: "title",
@@ -68,7 +69,12 @@ export const PAYLOAD_KEYS = {
   STATUS: "status",
   DEPTH: "depth",
   DISCOVERED_AT: "discovered_at",
-  META: "meta"
+  META: "meta",
+  TOPIC_ID: "topic_id",
+  TOPIC_NAME: "topic_name",
+  TAGS: "tags",
+  CREATED_AT: "created_at",
+  UPDATED_AT: "updated_at"
 } as const;
 
 // Type definitions for better type safety
