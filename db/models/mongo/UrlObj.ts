@@ -12,6 +12,7 @@ interface IUrl extends Document {
   title?: string;
   links?: string[];
   meta?: any;
+  updatedAt: Date;
 }
 
 const UrlSchema = new Schema<IUrl>({
@@ -23,6 +24,7 @@ const UrlSchema = new Schema<IUrl>({
   },
   depth: { type: Number, default: 0 },
   discoveredAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
   title: String,
   links: [String],
   meta: mongoose.Schema.Types.Mixed // any other metadata

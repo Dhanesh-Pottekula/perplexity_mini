@@ -13,6 +13,7 @@ export {
   urlService 
 } from '../../services/urlService';
 
+
 // Re-export types for convenience
 export type { 
   VectorPoint, 
@@ -22,4 +23,4 @@ export type {
   UrlCollectionConfig,
 } from '../models/qdrant/CollectionTypes';
 
-export type { qdrantDistanceTypes } from '../../interfaces/config';
+export type { QdrantDistanceTypes } from '../../interfaces/config';

@@ -40,6 +40,7 @@ async function processUrl(urlData: any) {
         links,
         status: URL_STATUS.VISITING,
         depth: currentDepth,
+        updatedAt: new Date(),
       }
     );
     const url_id = document._id as mongoose.Types.ObjectId;

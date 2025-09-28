@@ -10,4 +10,7 @@ export const envDefaults = {
   PORT: Number(process.env.PORT) || 3000,
   BROWSER_HEADLESS: process.env.BROWSER_HEADLESS === "true" ? true : false,
   EMBEDDING_SERVICE_URL: process.env.EMBEDDING_SERVICE_URL || "http://localhost:8001",
+  NGINX_URL: process.env.NGINX_URL || "http://localhost:11434",
+  MAX_CONCURRENT_LLM_CALLS: Number(process.env.MAX_CONCURRENT_LLM_CALLS) || 5,
+  MAX_RETRIES: Number(process.env.MAX_RETRIES) || 3,
 };
