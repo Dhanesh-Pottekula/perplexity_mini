@@ -47,6 +47,11 @@ export interface SearchResult {
   payload?: Record<string, any>;
 }
 
+export interface FilterResult {
+  id: string | number;
+  payload?: Record<string, any>;
+}
+
 export interface CollectionManager {
 
   upsertPoints(collectionName: string, points: VectorPoint[]): Promise<boolean>;
@@ -56,5 +61,11 @@ export interface CollectionManager {
     limit?: number, 
     filter?: Record<string, any>
   ): Promise<SearchResult[]>;
+  filterPoints(
+    collectionName: string,
+    filter: Record<string, any>,
+    limit?: number,
+    offset?: string
+  ): Promise<FilterResult[]>;
   deletePoints(collectionName: string, ids: (string | number)[]): Promise<boolean>;
 }

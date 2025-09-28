@@ -31,9 +31,12 @@ class EmbeddingConfig:
 
 # API Endpoints
 class ApiEndpoints:
+    EMBED_URLS = "/embed_urls"
     EMBED = "/embed"
     SEARCH = "/search"
     HEALTH = "/health"
+    CHAT = "/chat"
+
 
 # Error Messages
 class ErrorMessages:
@@ -41,6 +44,7 @@ class ErrorMessages:
     QDRANT_ERROR = "Error with Qdrant operation"
     COLLECTION_ERROR = "Error ensuring collection exists"
     UPSERT_ERROR = "Error upserting embeddings"
+    CHAT_ERROR = "Error generating chat"
 
 # Success Messages
 class SuccessMessages:
@@ -48,7 +52,7 @@ class SuccessMessages:
     COLLECTION_CREATED = "Collection created successfully"
     COLLECTION_EXISTS = "Collection already exists"
     UPSERT_SUCCESS = "Embeddings upserted successfully"
-
+    CHAT_SUCCESS = "Chat generated successfully"
 # Payload Keys
 class PayloadKeys:
     URL_ID = "url_id"

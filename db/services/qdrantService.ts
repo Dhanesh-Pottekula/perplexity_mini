@@ -3,6 +3,7 @@ import { getQdrantClient } from "../../configs/qdrant";
 import { 
   VectorPoint, 
   SearchResult, 
+  FilterResult,
 
 } from "../models/qdrant/CollectionTypes";
 
@@ -35,15 +36,21 @@ export class QdrantService {
   async searchPoints(
     collectionName: string, 
     vector: number[], 
-    limit: number = 10, 
-    filter?: Record<string, any>
+    limit?: number, 
+    score_threshold?: number,
+    filter?: Record<string, any>,
   ): Promise<SearchResult[]> {
     try {
       const searchParams: any = {
-        vector,
         limit,
-        with_payload: true
+        with_payload: true,
       };
+      if (score_threshold) {
+        searchParams.score_threshold = score_threshold;
+      }
+      if (vector) {
+        searchParams.vector = vector;
+      }
 
       if (filter) {
         searchParams.filter = filter;
@@ -58,6 +65,42 @@ export class QdrantService {
       }));
     } catch (error) {
       console.error(`❌ Failed to search points in '${collectionName}':`, error);
+      return [];
+    }
+  }
+
+  async filterPoints(
+    collectionName: string,
+    filter: Record<string, any>,
+    limit?: number,
+    offset?: string | number,
+  ): Promise<FilterResult[]> {
+    try {
+      const scrollParams: any = {
+        with_payload: true,
+        with_vectors: false,
+      };
+
+      if (filter) {
+        scrollParams.filter = filter;
+      }
+
+      if (limit !== undefined) {
+        scrollParams.limit = limit;
+      }
+
+      if (offset !== undefined) {
+        scrollParams.offset = offset;
+      }
+
+      const { points } = await this.client.scroll(collectionName, scrollParams);
+
+      return (points || []).map(point => ({
+        id: point.id,
+        payload: point.payload || {}
+      }));
+    } catch (error) {
+      console.error(`❌ Failed to filter points in '${collectionName}':`, error);
       return [];
     }
   }

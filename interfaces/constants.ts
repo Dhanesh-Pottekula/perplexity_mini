@@ -5,8 +5,7 @@
 // Collection Names
 export const COLLECTION_NAMES = {
   URLS: "urls",
-  DOCUMENTS: "documents",
-  WEB_CONTENT: "web_content"
+  TOPICS: "topics"
 } as const;
 
 // URL Status Values
@@ -33,6 +32,7 @@ export const EMBEDDING_CONFIG = {
 
 // API Endpoints
 export const API_ENDPOINTS = {
+  EMBED_URLS: "/embed_urls",
   EMBED: "/embed",
   SEARCH: "/search",
   HEALTH: "/health"

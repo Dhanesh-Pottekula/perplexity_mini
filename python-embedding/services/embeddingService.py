@@ -19,5 +19,14 @@ class EmbeddingService:
         except Exception as e:
             print(f"{e}")
 
+    async def generateEmbeddings(self, texts: List[str]) -> List[List[float]]:
+        """Generate embeddings for texts without storing them"""
+        try:
+            embeddings = self.embedding.model.encode(texts, convert_to_numpy=True).tolist()
+            return embeddings
+        except Exception as e:
+            print(f"Error generating embeddings: {e}")
+            raise e
+
 
 embeddingService = EmbeddingService()

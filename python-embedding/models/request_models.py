@@ -11,6 +11,7 @@ class EmbeddingRequest(BaseModel):
 class EmbeddingResponse(BaseModel):
     message: str
     success: bool
+    embeddings: List[List[float]] = None
 
 
 class SearchRequest(BaseModel):

@@ -4,13 +4,14 @@ import { connectMongo } from "./configs/mongo";
 import { createCollectionsQdrant } from "./configs/qdrant";
 import { redisQueue } from "./db/services/redisService";
 import urlRoutes from "./routes/urlRoutes";
+import chatRoutes from "./routes/chatRoutes";
 import "./agents/webContentExtractor"; // Import the agent to start the subscription
 import "./workers/CronJobWorker"; // Import the cron job worker to start scheduled tasks
 
 export async function createApp() {
   await connectMongo();
   await createCollectionsQdrant();
-  
+
   // Initialize Redis connection
   await redisQueue.initialize();
 
@@ -19,6 +20,7 @@ export async function createApp() {
 
   // API Routes
   app.use("/api/urls", urlRoutes);
+  app.use("/api/chat", chatRoutes);
 
   app.get("/health", (req, res) => {
     res.json({ status: "ok", pid: process.pid });

@@ -53,7 +53,7 @@ async function processUrlsWithDepthLimit() {
 // "*/5 * * * *" - every 5 minutes  
 // "0 */1 * * *" - every hour
 // "0 0 * * *" - every day at midnight
-cron.schedule("* */1 * * *", () => {
+cron.schedule("0 0 * * *", () => {
   processUrlsWithDepthLimit();
 });
 

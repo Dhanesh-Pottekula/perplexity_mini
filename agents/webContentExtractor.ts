@@ -2,7 +2,7 @@ import { redisQueue } from "../db/services/redisService";
 import { QueueName } from "../interfaces/config";
 import { scrapeWebsite, ScrapeWebsiteEnqueue } from "../workers/scrapingWorker";
 import { sleep } from "../helpers/timers";
-import { getEmbeddings } from "../db/services/apiService";
+import { storeurlContent } from "../db/services/apiService";
 import { chunkText } from "../helpers/formettors";
 import { urlMongoService } from "../db/models/mongo/UrlObj";
 import {
@@ -50,7 +50,7 @@ async function processUrl(urlData: any) {
       chunkContent,
       url_id: url_id.toString(),
     };
-    await getEmbeddings(data);
+    await storeurlContent(data);
 
     // Only push links if the incremented depth won't exceed the limit
     if (currentDepth < 1) {
