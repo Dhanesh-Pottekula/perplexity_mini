@@ -10,7 +10,7 @@ type RawSearchResult = {
 type SearchResult = {
   title: string;
   url: string;
-  snippet?: string;
+  snippet: string;
 };
 
 type SearchResponse = SearchResult[];
@@ -29,7 +29,9 @@ function extractJsonPayload(content: string | undefined): unknown {
   }
 
   const codeFenceMatch = trimmed.match(/```(?:json)?([\s\S]*?)```/i);
-  const jsonCandidate = codeFenceMatch ? codeFenceMatch[1].trim() : trimmed;
+  const jsonCandidate = codeFenceMatch && codeFenceMatch[1]
+    ? codeFenceMatch[1].trim()
+    : trimmed;
 
   const firstBracketIndex = jsonCandidate.indexOf("[");
   const lastBracketIndex = jsonCandidate.lastIndexOf("]");
@@ -62,7 +64,7 @@ function normaliseSearchResults(payload: unknown, maxResults: number): SearchRes
     .map((entry) => ({
       title: entry.title ?? "",
       url: entry.url ?? "",
-      snippet: entry.snippet ?? entry.text,
+      snippet: entry.snippet ?? entry.text ?? "",
     }))
     .filter((entry) => Boolean(entry.url))
     .slice(0, maxResults);

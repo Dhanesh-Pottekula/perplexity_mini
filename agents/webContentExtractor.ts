@@ -2,7 +2,7 @@ import { redisQueue } from "../db/services/redisService";
 import { QueueName } from "../interfaces/config";
 import { scrapeWebsite, ScrapeWebsiteEnqueue } from "../workers/scrapingWorker";
 import { sleep } from "../helpers/timers";
-import { storeurlContent } from "../db/services/apiService";
+import { storageService } from "../services/storageService";
 import { chunkText } from "../helpers/formettors";
 import { urlMongoService } from "../db/models/mongo/UrlObj";
 import {
@@ -25,7 +25,6 @@ async function processUrl(urlData: any) {
     
     // Check depth limit early to avoid unnecessary processing
     if (currentDepth > 1) {
-      console.log("🔍 Skipping URL due to depth limit:", url);
       return;
     }
 
@@ -46,11 +45,10 @@ async function processUrl(urlData: any) {
     const url_id = document._id as mongoose.Types.ObjectId;
     const chunkContent = chunkText(content, 500, 50);
 
-    const data = {
-      chunkContent,
+    await storageService.process({
+      content: chunkContent,
       url_id: url_id.toString(),
-    };
-    await storeurlContent(data);
+    });
 
     // Only push links if the incremented depth won't exceed the limit
     if (currentDepth < 1) {
@@ -61,7 +59,6 @@ async function processUrl(urlData: any) {
         };
         // await sleep(5000);
         await redisQueue.push(QUEUE_NAMES.URLS_QUEUE as QueueName, linkData);
-        console.log("🔍 Pushing links completed:", url);
       }
     } else {
       console.log("🔍 Not pushing links - depth limit reached:", url);

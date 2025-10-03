@@ -14,4 +14,6 @@ export const envDefaults = {
   MAX_CONCURRENT_LLM_CALLS: Number(process.env.MAX_CONCURRENT_LLM_CALLS) || 5,
   MAX_RETRIES: Number(process.env.MAX_RETRIES) || 3,
   PERPLEXITY_API_KEY: process.env.PERPLEXITY_API_KEY || "",
+  OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+  OPENROUTER_BASE_URL: process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1",
 };

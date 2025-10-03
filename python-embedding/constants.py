@@ -31,8 +31,8 @@ class EmbeddingConfig:
 
 # API Endpoints
 class ApiEndpoints:
-    EMBED_URLS = "/embed_urls"
     EMBED = "/embed"
+    EMBED_BATCH = "/embed_batch"
     SEARCH = "/search"
     HEALTH = "/health"
     CHAT = "/chat"

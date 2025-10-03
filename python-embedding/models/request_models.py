@@ -3,13 +3,12 @@ from typing import List
 
 
 
-class EmbeddingRequest(BaseModel):
-    url_id: str
-    texts: List[str]
-
-
 class EmbeddingQueryRequest(BaseModel):
     query: str
+
+
+class EmbeddingBatchRequest(BaseModel):
+    texts: List[str]
 
 
 class EmbeddingResponse(BaseModel):

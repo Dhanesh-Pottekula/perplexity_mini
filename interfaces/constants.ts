@@ -32,8 +32,8 @@ export const EMBEDDING_CONFIG = {
 
 // API Endpoints
 export const API_ENDPOINTS = {
-  EMBED_URLS: "/embed_urls",
   EMBED: "/embed",
+  EMBED_BATCH: "/embed_batch",
   SEARCH: "/search",
   HEALTH: "/health",
 } as const;
@@ -71,6 +71,7 @@ export const PAYLOAD_KEYS = {
   DISCOVERED_AT: "discovered_at",
   META: "meta",
   TOPIC_ID: "topic_id",
+  TOPIC_IDS: "topic_ids",
   TOPIC_NAME: "topic_name",
   TAGS: "tags",
   CREATED_AT: "created_at",
