@@ -89,23 +89,18 @@ export class StorageService {
     const topic_ids = await this.upsertTopicsAndReturnIds(topics);
     console.log(topic_ids)
 
-    // Enrich texts with topic_ids
-    const enriched = data.content.map((text, index) => {
-      const suffix = topic_ids.length ? ` | topics: ${topic_ids.join(", ")}` : "";
-      return { text: `${text}${suffix}`, index };
-    });
-
-    // Get embeddings for URL chunks
-    const { embeddings } = await getEmbeddingsBatch(enriched.map(e => e.text));
+    // Get embeddings for URL chunks (raw text, no enrichment)
+    const texts = data.content;
+    const { embeddings } = await getEmbeddingsBatch(texts);
 
     // Upsert to URLs collection
-    const urlPoints = enriched.map((e, idx) => ({
+    const urlPoints = texts.map((text, idx) => ({
       id: (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${idx}-${Math.random()}`),
       vector: embeddings[idx],
       payload: {
         [PAYLOAD_KEYS.URL_ID]: data.url_id,
-        [PAYLOAD_KEYS.TEXT]: e.text,
-        [PAYLOAD_KEYS.INDEX]: e.index,
+        [PAYLOAD_KEYS.TEXT]: text,
+        [PAYLOAD_KEYS.INDEX]: idx,
         [PAYLOAD_KEYS.TOPIC_IDS]: topic_ids,
         [PAYLOAD_KEYS.UPDATED_AT]: new Date().toISOString(),
       },
