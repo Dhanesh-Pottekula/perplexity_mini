@@ -1,5 +1,19 @@
 import cron from "node-cron";
-import { cleanExpiredUrlsCronJob, processUrlsWithDepthLimitCronJob } from "../services/jobService";
+import {
+  cleanExpiredUrlsCronJob,
+  processUrlsWithDepthLimitCronJob,
+  seedTopicsWithUrlsCronJob,
+} from "../services/jobService";
+cron.schedule(
+  "0 0 * * *",
+  () => {
+    seedTopicsWithUrlsCronJob();
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
+
 
 
 

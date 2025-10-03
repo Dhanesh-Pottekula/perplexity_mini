@@ -13,21 +13,23 @@ interface IUrl extends Document {
   links?: string[];
   meta?: any;
   updatedAt: Date;
+  sourceTopic?: string;
 }
 
 const UrlSchema = new Schema<IUrl>({
   url: { type: String, unique: true },
-  status: { 
-    type: String, 
-    enum: Object.values(URL_STATUS), 
-    default: URL_STATUS.PENDING 
+  status: {
+    type: String,
+    enum: Object.values(URL_STATUS),
+    default: URL_STATUS.PENDING
   },
   depth: { type: Number, default: 0 },
   discoveredAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   title: String,
   links: [String],
-  meta: mongoose.Schema.Types.Mixed // any other metadata
+  meta: mongoose.Schema.Types.Mixed,
+  sourceTopic: String
 });
 
 const Url = mongoose.model<IUrl>("Url", UrlSchema);
