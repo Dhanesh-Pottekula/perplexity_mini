@@ -55,8 +55,6 @@ class SuccessMessages:
     CHAT_SUCCESS = "Chat generated successfully"
 # Payload Keys
 class PayloadKeys:
-    URL_ID = "url_id"
-    URL_IDS = "url_ids"  # Array of URL IDs for topics
     TEXT = "text"
     INDEX = "index"
     TITLE = "title"
@@ -67,6 +65,7 @@ class PayloadKeys:
     DISCOVERED_AT = "discovered_at"
     META = "meta"
     TOPIC_ID = "topic_id"
+    TOPIC_IDS = "topic_ids"
     TOPIC_NAME = "topic_name"
     TAGS = "tags"
     USER_ID = "user_id"

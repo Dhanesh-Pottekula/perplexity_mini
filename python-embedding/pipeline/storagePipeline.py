@@ -2,13 +2,14 @@ from typing import List
 from prompts.storagePrompts import StoragePrompts
 from agents.llm.ollama import OlamaClient
 from models.internalModals import OpenRouterChatModels, StorageAgentPydanticModels
-from core.embedding import Embedding
+from core.embedding import embedding
+from constants import PayloadKeys
 
 
 class StoragePipeline:
     def __init__(self):
         self.llm = OlamaClient()
-        self.embedding = Embedding()
+        self.embedding = embedding
         self.storagePrompts = StoragePrompts()
 
     async def process(self, data):
@@ -16,10 +17,12 @@ class StoragePipeline:
         response = await self.extractTopicsFromContentWithTags(
             data["content"]
         )
-
-        await self.embedding.upsert_embeddings_topics_qdrant(
+        topic_records = await self.embedding.upsert_embeddings_topics_qdrant(
             response.topics or [], url_id=data["url_id"]
         )
+
+        topic_ids = [record.get(PayloadKeys.TOPIC_ID) for record in topic_records if record.get(PayloadKeys.TOPIC_ID)]
+        return topic_ids
 
     async def extractTopicsFromContentWithTags(
         self, content: List[str]

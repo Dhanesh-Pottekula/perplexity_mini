@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-from typing import List, Dict, Any, cast
+from typing import List, Dict, Any, cast, Optional
 import uuid
 from datetime import datetime, timezone
 from qdrant_client.models import PointStruct, Filter, FieldCondition, MatchAny
@@ -14,7 +14,9 @@ class Embedding:
         self.vector_size = EmbeddingConfig.VECTOR_SIZE
         self.client = qdrant_config.get_client()
 
-    async def upsert_embeddings_urls(self, url_id: str, texts: List[str]) -> None:
+    async def upsert_embeddings_urls(
+        self, url_id: str, texts: List[str], topic_ids: Optional[List[str]] = None
+    ) -> None:
         """Generate embeddings for texts and upsert them to Qdrant collection"""
         # Generate embeddings
         try:
@@ -23,14 +25,18 @@ class Embedding:
             points = []
             for i, (text, embedding) in enumerate(zip(texts, embeddings)):
                 point_id = str(uuid.uuid4())
+                payload = {
+                    PayloadKeys.TEXT: text,
+                    PayloadKeys.INDEX: i,
+                }
+
+                if topic_ids:
+                    payload[PayloadKeys.TOPIC_IDS] = topic_ids
+
                 point = PointStruct(
                     id=point_id,
                     vector=embedding,
-                    payload={
-                        PayloadKeys.URL_ID: url_id,
-                        PayloadKeys.TEXT: text,
-                        PayloadKeys.INDEX: i,
-                    },
+                    payload=payload,
                 )
                 points.append(point)
 
@@ -42,7 +48,11 @@ class Embedding:
             print(f"{ErrorMessages.UPSERT_ERROR}: {e}")
 
 
-    async def upsert_embeddings_topics_qdrant(self, texts: List[StorageAgentPydanticModels.TopicExtractionItem], url_id: str = None) -> None:
+    async def upsert_embeddings_topics_qdrant(
+        self,
+        texts: List[StorageAgentPydanticModels.TopicExtractionItem],
+        url_id: str = None,
+    ) -> List[Dict[str, Any]]:
         """Generate embeddings for texts and upsert them to Qdrant collection with topic merging logic"""
         try:
             # Step 1: Prepare array of unique topic names
@@ -78,6 +88,7 @@ class Embedding:
             
             # Step 3: Process each topic decision and create payloads
             tasks = []
+            topic_records: List[Dict[str, Any]] = []
             created_at = datetime.now(timezone.utc)
             
             for topic_decision in texts:
@@ -95,17 +106,10 @@ class Embedding:
                     tags = list(dict.fromkeys(tags))
                     created_at_val = payload[PayloadKeys.CREATED_AT]
                     
-                    # Handle URL IDs for existing topics - get existing URL IDs and add new one if not already present
-                    existing_url_ids = payload.get(PayloadKeys.URL_IDS, [])
-                    if url_id and url_id not in existing_url_ids:
-                        existing_url_ids.append(url_id)
-                    url_ids = existing_url_ids
                 else:
                     # Generate new topic_id if not found in DB
                     topic_id = str(uuid.uuid4())
                     created_at_val = created_at
-                    # For new topics, create array with current URL ID
-                    url_ids = [url_id] if url_id else []
 
                 # Prepare tags text for embedding
                 tags_text = " ".join(tags)
@@ -117,7 +121,6 @@ class Embedding:
                 
                 # Create the topic payload
                 topic_payload = {
-                    PayloadKeys.URL_IDS: url_ids,
                     PayloadKeys.TOPIC_ID: topic_id,
                     PayloadKeys.TOPIC_NAME: topic_name,
                     PayloadKeys.TAGS: tags,
@@ -132,14 +135,24 @@ class Embedding:
                     payload=topic_payload,
                 )
                 tasks.append(point)
+                topic_records.append(
+                    {
+                        PayloadKeys.TOPIC_ID: topic_id,
+                        PayloadKeys.TOPIC_NAME: topic_name,
+                        PayloadKeys.TAGS: tags,
+                    }
+                )
 
             # Step 4: Upsert all topics at once
             if tasks:
                 self.client.upsert(collection_name=CollectionNames.TOPICS, points=tasks)
                 print(f"Successfully upserted {len(tasks)} topics")
 
+            return topic_records
+
         except Exception as e:
             print(f"{ErrorMessages.UPSERT_ERROR}: {e}")
+            return []
 
 # Global instance
 embedding = Embedding()

@@ -35,7 +35,7 @@ export const API_ENDPOINTS = {
   EMBED_URLS: "/embed_urls",
   EMBED: "/embed",
   SEARCH: "/search",
-  HEALTH: "/health"
+  HEALTH: "/health",
 } as const;
 
 // Error Messages

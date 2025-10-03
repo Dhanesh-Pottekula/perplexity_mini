@@ -13,4 +13,5 @@ export const envDefaults = {
   NGINX_URL: process.env.NGINX_URL || "http://localhost:11434",
   MAX_CONCURRENT_LLM_CALLS: Number(process.env.MAX_CONCURRENT_LLM_CALLS) || 5,
   MAX_RETRIES: Number(process.env.MAX_RETRIES) || 3,
+  PERPLEXITY_API_KEY: process.env.PERPLEXITY_API_KEY || "",
 };

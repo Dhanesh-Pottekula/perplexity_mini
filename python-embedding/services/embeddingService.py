@@ -1,7 +1,6 @@
 from core.embedding import embedding
 from typing import List
 from pipeline.storagePipeline import storagePipeline
-import asyncio
 
 
 class EmbeddingService:
@@ -12,9 +11,15 @@ class EmbeddingService:
         self, url_id: str, texts: List[str]
     ) -> None:
         try:
-            await asyncio.gather(
-                self.embedding.upsert_embeddings_urls(url_id, texts),
-                storagePipeline.process({"url_id": url_id, "content": texts}),
+            topic_ids = await storagePipeline.process({"url_id": url_id, "content": texts})
+            enriched_texts = [
+                f"{text} | topics: {', '.join(topic_ids)}" if topic_ids else text
+                for text in texts
+            ]
+            await self.embedding.upsert_embeddings_urls(
+                url_id,
+                enriched_texts,
+                topic_ids=topic_ids,
             )
         except Exception as e:
             print(f"{e}")
